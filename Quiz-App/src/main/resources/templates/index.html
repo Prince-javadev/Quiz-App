@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Application</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <style>
+        .question-container {
+            display: none;
+        }
+        .question-container.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Quiz App</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/quiz">Quiz</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="register">Register</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="signin">Login</a>
+        </li>
+       
+      </ul>
+      
+    </div>
+  </div>
+</nav>
+
+
+    
+    <section class="container mt-5">
+        
+        <form th:action="@{/quiz/submit}" method="POST">
+            <div id="quiz-container">
+                
+                <div th:each="question, iterStat : ${questions}" 
+                     class="question-container" th:id="'question_' + ${iterStat.index}">
+                    <div class="mb-4">
+                        <p><strong th:text="${question.question}"></strong></p>
+
+                        <div th:switch="${question.questionType}">
+                            
+                            <div th:case="'Multiple Choice'">
+                                <div th:each="option : ${question.options}">
+                                    <label>
+                                        <input type="radio" th:name="'question_' + ${iterStat.index}" th:value="${option}" required>
+                                        <span th:text="${option}"></span>
+                                    </label><br>
+                                </div>
+                            </div>
+
+                           
+                            <div th:case="'True/False'">
+                                <div th:each="option : ${question.options}">
+                                    <label>
+                                        <input type="radio" th:name="'question_' + ${iterStat.index}" th:value="${option}" required>
+                                        <span th:text="${option}"></span>
+                                    </label><br>
+                                </div>
+                            </div>
+                            <div th:case="'Fill in the Blank'">
+        <input type="text" th:name="'question_' + ${iterStat.index}" class="form-control" placeholder="Type your answer here" required>
+    </div>
+
+                           
+                             <div th:case="'Short Answer'">
+        <input type="text" th:name="'question_' + ${iterStat.index}" class="form-control" placeholder="Type your answer here" required>
+    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="mt-4">
+                <button type="button" id="prevBtn" class="btn btn-secondary" onclick="navigate(-1)" disabled>Previous</button>
+                <button type="button" id="nextBtn" class="btn btn-primary" onclick="navigate(1)">Next</button>
+            </div>
+
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success" id="submitBtn" style="display:none;">Submit Answers</button>
+            </div>
+        </form>
+    </section>
+
+    <script>
+    let currentQuestionIndex = 0;
+    const questions = document.querySelectorAll('.question-container');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    
+    let answeredQuestions = Array(questions.length).fill(false);
+
+    function showQuestion(index) {
+        
+        questions.forEach((question, i) => {
+            question.classList.remove('active');
+            if (i === index) {
+                question.classList.add('active');
+            }
+        });
+
+        
+        prevBtn.disabled = true;
+        nextBtn.disabled = index === questions.length - 1 || !isCurrentQuestionAnswered();
+        submitBtn.style.display = index === questions.length - 1 ? 'inline-block' : 'none';
+    }
+
+    function isCurrentQuestionAnswered() {
+        const inputs = questions[currentQuestionIndex].querySelectorAll('input');
+        for (const input of inputs) {
+            if (input.type === 'radio' && input.checked) return true;
+            if (input.type === 'text' && input.value.trim() !== '') return true;
+        }
+        return false;
+    }
+
+    function navigate(step) {
+        
+        if (step > 0 && !isCurrentQuestionAnswered()) {
+            alert("Please answer the question before proceeding.");
+            return;
+        }
+
+        
+        if (step > 0) {
+            answeredQuestions[currentQuestionIndex] = true;
+        }
+
+        
+        currentQuestionIndex += step;
+
+       
+        if (step > 0) {
+            prevBtn.disabled = true;
+        }
+
+        showQuestion(currentQuestionIndex);
+    }
+
+    
+    questions.forEach((question, index) => {
+        const inputs = question.querySelectorAll('input');
+        inputs.forEach((input) => {
+            input.addEventListener('change', () => {
+                if (isCurrentQuestionAnswered()) {
+                    answeredQuestions[index] = true;
+                    nextBtn.disabled = false;
+                }
+            });
+        });
+    });
+
+    
+    showQuestion(currentQuestionIndex);
+</script>
+    
+</body>
+</html>
