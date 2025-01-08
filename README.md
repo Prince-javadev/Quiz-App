@@ -4,13 +4,13 @@
 
 
 ## Overview
-The Quiz Application is a web-based platform designed to deliver a seamless and engaging quiz experience. Users can register, log in, take quizzes, and view their results. The app shuffles a set of questions to ensure a unique experience for every user.
+The Quiz Application is a web-based platform designed to deliver a seamless and engaging quiz experience. Users can register, log in(including via Google), take quizzes, and view their results. The app shuffles a set of questions to ensure a unique experience for every user.
 
 ---
 
 ## Features
 - **User Registration:** Allows users to create an account.
-- **Login:** Secure access for registered users.
+- **Login:** Secure access for registered users, including Google login.
 - **Quiz Section:**
   - Displays 10 shuffled questions selected randomly from a database of 50 questions.
   - Supports 6 different types of questions (e.g., multiple choice, true/false, etc.).
@@ -25,6 +25,7 @@ The Quiz Application is a web-based platform designed to deliver a seamless and 
 - **Backend:** Spring Boot
 - **Frontend:** HTML, CSS, JavaScript, Bootstrap
 - **Database:** MySQL
+- **Authentication:** Google Login (OAuth 2.0)
 - **Tools:** Eclipse IDE (2023-12)
 
 ---
